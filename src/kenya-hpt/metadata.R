@@ -80,7 +80,9 @@ hpt_des <- datimutils::getMetadata("dataElements?filter=dataSetElements.dataSet.
       str_detect(shortName, "Haemoglobin Cuvettes") ~ "Diagnostics",
       str_detect(shortName, "Lugol’s iodine") ~ "Diagnostics",
       str_detect(shortName, "Test Kit") ~ "Diagnostics",
-      str_detect(shortName, "test strips") ~ "Diagnostics"
+      str_detect(shortName, "test strips") ~ "Diagnostics",
+      
+      TRUE ~ "Uncategorized"
     )
   ) %>%
   # Level of Use Mapping

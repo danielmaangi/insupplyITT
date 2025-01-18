@@ -16,7 +16,7 @@ library(datimutils)
 username<-"Maangi"
 password<-"kiMaNi:1991"
 base.url<-"https://hiskenya.org/"
-period <- 2024
+period <- 2023
 startdate <- paste0(period, "-01-01")
 enddate <- paste0(period, "-12-31")
 country <- "Kenya" # Type country

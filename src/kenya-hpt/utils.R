@@ -130,7 +130,7 @@ login(username, password, base.url)
 monthly_download("ppdqEN91qZs", 
                  startdate, enddate, 
                  orgunit, 
-                 paste0(project_path, "raw/HPT/"))
+                 paste0(project_path, "raw/results/"))
 
 
 # Reporting Rates
@@ -138,7 +138,7 @@ login(username, password, base.url)
 fetch_reports("ppdqEN91qZs", 
               startdate, enddate, 
               orgunit, 
-              paste0(project_path, "raw/REPORTS/"))
+              paste0(project_path, "raw/reports/"))
 
 
 # fetch_csv <- function(bucket, folder) {
