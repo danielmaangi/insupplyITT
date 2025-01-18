@@ -40,6 +40,7 @@ login(username,password,base.url)
 
 ############
 source("src/kenya-hpt/metadata.R")
+source("src/kenya-hpt/orgunits.R")
 source("src/kenya-hpt/utils.R")
 source("src/kenya-hpt/Merge.R")
 source("src/kenya-hpt/lastUpdate.R")

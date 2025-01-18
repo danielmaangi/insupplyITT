@@ -82,6 +82,73 @@ hpt_des <- datimutils::getMetadata("dataElements?filter=dataSetElements.dataSet.
       str_detect(shortName, "Test Kit") ~ "Diagnostics",
       str_detect(shortName, "test strips") ~ "Diagnostics"
     )
+  ) %>%
+  # Level of Use Mapping
+  mutate(
+    LoU = case_when(#Medicines
+    str_detect(shortName, "Albendazole") ~ 1,
+    str_detect(shortName, "Albendazole") ~ 1,
+    str_detect(shortName, "Paracetamol") ~ 1,
+    str_detect(shortName, "Sodium") ~ 1,
+    str_detect(shortName, "Tetracycline") ~ 1,
+    str_detect(shortName, "Adrenaline") ~ 2,
+    str_detect(shortName, "Amoxicillin") ~ 2,
+    str_detect(shortName, "Benzyl") ~ 2,
+    str_detect(shortName, "Carbamazepine") ~ 2,
+    str_detect(shortName, "Cetirizine") ~ 2,
+    str_detect(shortName, "Chlorhexidine") ~ 2,
+    str_detect(shortName, "Chlorpheniramine") ~ 2,
+    str_detect(shortName, "Fluoxetine") ~ 2,
+    str_detect(shortName, "Haloperidol") ~ 2,
+    str_detect(shortName, "Lignocaine") ~ 2,
+    str_detect(shortName, "Magnesium") ~ 2,
+    str_detect(shortName, "Metronidazole") ~ 2,
+    str_detect(shortName, "Nystatin") ~ 2,
+    str_detect(shortName, "ORS Co-Pack") ~ 2,
+    str_detect(shortName, "Oxytocin") ~ 2,
+    str_detect(shortName, "Salbutamol") ~ 2,
+    str_detect(shortName, "Amlodipine") ~ 3,
+    str_detect(shortName, "Atorvastatin") ~ 3,
+    str_detect(shortName, "Gentamicin") ~ 3,
+    str_detect(shortName, "Gliclazide") ~ 3,
+    str_detect(shortName, "Losartan") ~ 3,
+    str_detect(shortName, "Metformin") ~ 3,
+    str_detect(shortName, "Omeprazole") ~ 3,
+    str_detect(shortName, "Penicillin") ~ 3,
+    str_detect(shortName, "Soluble") ~ 3,
+    str_detect(shortName, "Ceftriaxone") ~ 4,
+    str_detect(shortName, "Hydroxyurea") ~ 4,
+    str_detect(shortName, "Insulin") ~ 4,
+    str_detect(shortName, "Midazolam") ~ 4,
+    
+    
+                    TRUE ~ NA_integer_)
   )
 
 fwrite(hpt_des, paste0("data/kenya-hpt/metadata/HPT_DES.csv"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
