@@ -1,6 +1,6 @@
 # Dataset paths
 
-hpt_path <- "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/Download/HPT.csv"
+hpt_path <- "data/kenya-hpt/clean/HPT.csv"
 
 # Last updated
 
@@ -17,4 +17,4 @@ latestUpdate <- cbind(
   as.data.frame()
 
 fwrite(latestUpdate,
-       paste0("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/Download/latestUpdate", ".csv"))
+       paste0("data/kenya-hpt/clean/latestUpdate", ".csv"))

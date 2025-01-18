@@ -84,4 +84,4 @@ hpt_des <- datimutils::getMetadata("dataElements?filter=dataSetElements.dataSet.
     )
   )
 
-fwrite(hpt_des, paste0(project_path, "metadata/HPT_DES.csv"))
+fwrite(hpt_des, paste0("data/kenya-hpt/metadata/HPT_DES.csv"))

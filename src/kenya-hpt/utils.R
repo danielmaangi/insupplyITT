@@ -10,7 +10,7 @@ login <- function(username, password, base.url) {
   }
 }
 
-project_path <- "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/"
+project_path <- "data/kenya-hpt/"
 datimutils::loginToDATIM(username = username,
              password = password,
              base_url = base.url)
@@ -115,7 +115,7 @@ fetch_reports <- function(dataset, startdate, enddate, orgunit, output_folder) {
 
 load_program_data <- function(program_name, project_path) {
   # Construct the file path based on the program name
-  file_path <- paste0(project_path, "raw/", program_name, "/")
+  file_path <- paste0(project_path, "raw/results/", program_name, "/")
   
   # Load all CSV files from the specified directory and add a 'Programme' column
   program_data <- map_df(list.files(file_path, pattern = "\\.csv$", full.names = TRUE),

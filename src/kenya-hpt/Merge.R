@@ -5,12 +5,12 @@ rm(list = ls())
 library(tidyverse)
 library(data.table)
 
-dataElements <- fread("metadata/HPT_DES.csv")
+dataElements <- fread("data/kenya-hpt/metadata/HPT_DES.csv")
 
 # HPT Data
 #--------------------------------------------------------------------
 hpt <- list.files(
-  path = "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/raw/HPT",
+  path = "data/kenya-hpt/raw/results/",
   pattern = "*.csv", full.names = T) %>%
   map(read_csv, col_types = cols(.default = "c")) %>%
   map_df(rbind)
@@ -24,18 +24,18 @@ hpt2 <- hpt %>%
   ) %>%
   select(- value)
 
-fwrite(hpt2, "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/Download/HPT.csv", na = "")
+fwrite(hpt2, "data/kenya-hpt/clean/HPT.csv", na = "")
 
 # HPT Reports
 #--------------------------------------------------------------------
 hpt_reports_dataset <- list.files(
-  path = "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/raw/REPORTS",
+  path = "data/kenya-hpt/raw/reports/",
   pattern = "*.csv", full.names = T) %>%
   map(read_csv, col_types = cols(.default = "c")) %>%
   map_df(rbind) 
 glimpse(hpt_reports_dataset)
 
-fwrite(hpt_reports_dataset, "G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/Download/HPT_REPORTS.csv", na = "")
+fwrite(hpt_reports_dataset, "data/kenya-hpt/clean/REPORTS.csv", na = "")
 
 
 

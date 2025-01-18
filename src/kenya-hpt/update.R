@@ -8,6 +8,8 @@ library(data.table)
 library(readxl)
 library(jsonlite)
 library(future.apply)
+# devtools::install_github(repo = "https://github.com/pepfar-datim/datimutils.git", ref = "master")
+library(datimutils)
 
 
 #Kenya ~ HfVjCurKxh2
@@ -35,16 +37,9 @@ login <- function(username,password,base.url) {
 }
 login(username,password,base.url)
 
-#source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/Download.R")
-#source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/reports.R")
-
-###########
-source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/parameters.R")
-# source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/reports.R")
-# source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/RevisedDownload.R")
-
 
 ############
-source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/utils.R")
-source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/Merge.R")
-source("G:/.shortcut-targets-by-id/1-I-AM6fIfll60idw-jnzME08IVKzNdfj/MLE_DATA/Dashboards/Production/HPT/dataModel/DHIS2/hiskenya/codes/lastUpdate.R")
+source("src/kenya-hpt/metadata.R")
+source("src/kenya-hpt/utils.R")
+source("src/kenya-hpt/Merge.R")
+source("src/kenya-hpt/lastUpdate.R")
