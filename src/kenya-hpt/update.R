@@ -44,3 +44,5 @@ source("src/kenya-hpt/orgunits.R")
 source("src/kenya-hpt/utils.R")
 source("src/kenya-hpt/Merge.R")
 source("src/kenya-hpt/lastUpdate.R")
+source("src/kenya-hpt/deploy.R")
+
