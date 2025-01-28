@@ -1,20 +1,17 @@
-
-
-
-
 library(DBI)
 library(RMySQL)  # or RMariaDB
 library(dplyr)
 library(tidyr)
 
 # Replace with your database credentials
+source("config/kenya-hpt/hpt_credentials.R")
 con <- dbConnect(
   MySQL(),
-  dbname = "ish_kenya_itt",
-  host = "158.220.96.127",  # or your server address
-  port = 3306,         # default MySQL port
-  user = "admin",
-  password = "Admin@2024"
+  dbname = dbname,
+  host = host,  # or your server address
+  port = port,         # default MySQL port
+  user = user,
+  password = password
 )
 
 
@@ -30,6 +27,8 @@ orgunits <- dbGetQuery(con, "SELECT * FROM orgunits")
 
 glimpse(orgunits)
 
+# Impact Counties
+impact_counties <- c("Nairobi", "Nakuru", "Trans Nzoia", "Kakamega", "Isiolo")
 
 fp_sor <- fp_data %>%
   left_join(orgunits, by = c("orgUnit" = "id")) %>%

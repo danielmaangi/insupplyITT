@@ -16,9 +16,9 @@ library(datimutils)
 username<-"Maangi"
 password<-"kiMaNi:1991"
 base.url<-"https://hiskenya.org/"
-period <- 2023
-startdate <- paste0(period, "-01-01")
-enddate <- paste0(period, "-12-31")
+period <- 2021
+enddate <- as.Date("2023-01-01") - months(1)  #Sys.Date(); as.Date("2023-01-01") / 
+startdate <- enddate - months(11)  
 country <- "Kenya" # Type country
 action <- "download"
 

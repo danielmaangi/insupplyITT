@@ -44,5 +44,5 @@ To use the ITT in R, follow these steps:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/danielmaangi/insupplyHealth-ITT.git
+   git clone https://github.com/danielmaangi/insupplyITT.git
 
