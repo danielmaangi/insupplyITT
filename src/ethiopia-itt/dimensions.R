@@ -3,7 +3,7 @@ library(readxl)
 library(tidyverse)
 library(data.table)
 
-products <- read_excel("ET Tracer Commodities.xlsx",
+products <- read_excel("data/ethiopia-itt/metadata/ET Tracer Commodities.xlsx",
                        sheet = "Template",
                        skip = 12) |>
   select(-c(`Stock on Hand`, `Total consumed quantity in the month`, `No. of Days out of stock in the month`))
@@ -12,10 +12,10 @@ colnames(products)[1] <- "serial_no"
 colnames(products)[2] <- "programme"
 colnames(products)[3] <- "product"
 
-fwrite(products,"products.csv")
+fwrite(products,"data/ethiopia-itt/clean/products.csv")
 
 
-facilities <- read_excel("ET Tracer Commodities.xlsx",
+facilities <- read_excel("data/ethiopia-itt/metadata/ET Tracer Commodities.xlsx",
                        sheet = "Sheet2")
 
 clean_sites <- facilities %>%
@@ -26,4 +26,5 @@ clean_sites <- facilities %>%
     site_code = str_to_lower(site_code)
   )
 
-fwrite(clean_sites,"sites.csv")
+fwrite(clean_sites,"data/ethiopia-itt/clean/sites.csv")
+

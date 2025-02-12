@@ -8,10 +8,10 @@ library(tidyverse)
 library(purrr)
 library(glue)
 
-source("utils.R")
-source("tests.R")
+source("src/ethiopia-itt/utils.R")
+source("src/ethiopia-itt/tests.R")
 ## Products
-clean_product_list <- fread("products.csv") %>%
+clean_product_list <- fread("data/ethiopia-itt/clean/products.csv") %>%
   select(serial_no, product, programme) %>%
   rename(sn = serial_no,
          prog = programme)
@@ -254,13 +254,13 @@ missing_serial <- clean_data %>%
   distinct(item)
 
 # Run tests
-output_csv_path <- "clean_data.csv"
+output_csv_path <- "data/ethiopia-itt/clean/clean_data.csv"
 test_missing(clean_data, output_csv_path)
 
 # Generate reports
 reports <- clean_data %>%
   distinct(month, date, site_code)
-fwrite(reports, "reports.csv")
+fwrite(reports, "data/ethiopia-itt/clean/reports.csv")
 
 
 
