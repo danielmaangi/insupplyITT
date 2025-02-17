@@ -20,7 +20,7 @@ OrgUnitsGroups %>% filter(grepl("KEPH", name))
 
 
 keph1 <- datimutils::getMetadata("organisationUnitGroups/axUnguN4QDh/organisationUnits", 
-                                    fields = "id,level,parent, code,name") %>%
+                                 fields = "id,level,parent, code,name") %>%
   mutate(
     Facility_Level = "KEPH Level 1",
     Facility_id = "axUnguN4QDh"
@@ -209,16 +209,41 @@ glimpse(clean_orgs)
 
 # Load KEPH Level
 keph_level <- keph_level_orgs %>%
-  select(id, Facility_Level)
+  select(id, Facility_Level) %>%
+  mutate(Level_Numeric = as.numeric(str_extract(Facility_Level, "\\d+")))
 
-impact_counties <- c('Nairobi', 'Nakuru', 'Trans Nzoia', 'Kakamega', 'Isiolo')
+glimpse(keph_level)
+
+keph_level %>%
+  count(id) %>%
+  filter(n > 1)  # Shows ids that appear more than once
+
+glimpse(keph_level)
+
+keph_level <- keph_level %>%
+  arrange(id, desc(Level_Numeric)) %>%
+  group_by(id) %>%
+  distinct(id, .keep_all = TRUE) %>%
+  ungroup()
+
+keph_level %>%
+  count(id) %>%
+  filter(n > 1)
+
+glimpse(keph_level)
 
 clean_orgs_level <- clean_orgs %>%
-  left_join(keph_level, by = c("id" = "id")) %>%
-  filter(county %in% impact_counties)
+  left_join(keph_level, by = c("id" = "id")) 
 
-clean_orgs_level %>% filter(!is.na(Facility_Level)) %>% group_by(level) %>% tally()
+clean_orgs_level %>% filter(is.na(Facility_Level)) %>% group_by(level) %>% tally()
 
-fwrite(clean_orgs_level, "data/analysis/orgunits_level.csv")
+clean_orgs_level <- clean_orgs_level %>%
+  mutate(Facility_Level = case_when(is.na(Facility_Level) & level %in% c(5,6) ~ "KEPH Level 2",
+         TRUE ~ Facility_Level)
+         )
 
+clean_orgs_level %>% filter(is.na(Facility_Level)) %>% group_by(level) %>% tally()
 
+fwrite(clean_orgs_level, "data/kenya-hpt/orgunits_level.csv")
+
+fwrite(clean_orgs, "data/kenya-hpt/orgunits.csv")

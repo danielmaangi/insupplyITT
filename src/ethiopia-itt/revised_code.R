@@ -34,7 +34,7 @@ subfolders <- drive_ls(parent_folder, type = "folder")
 print(subfolders)
 
 # Ensure the 'data' folder exists in the R project
-data_dir <- "data"
+data_dir <- "data/ethiopia-itt/raw/results"
 if (!dir.exists(data_dir)) dir.create(data_dir)
 
 # Initialize a list to store all data

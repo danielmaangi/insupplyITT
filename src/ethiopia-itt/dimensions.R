@@ -23,7 +23,7 @@ clean_sites <- facilities %>%
     site_code = paste(Region, Woreda, gsub(" ", "", `Facility Name`) , sep = "-")
   ) %>%
   mutate(
-    site_code = str_to_lower(site_code)
+    site_code = str_replace_all(str_to_lower(site_code)," ", "")
   )
 
 fwrite(clean_sites,"data/ethiopia-itt/clean/sites.csv")

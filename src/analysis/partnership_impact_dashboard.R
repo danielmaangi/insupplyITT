@@ -142,10 +142,8 @@ reports_data <- reports_data %>%
 glimpse(reports_data)
 
 
-
-
-
 # HPT Reports ONLY
+#=============================================
 con <- dbConnect(
   MySQL(),
   dbname = dbname,
@@ -163,12 +161,20 @@ hpt_reports <- dbGetQuery(con, paste(
 
 hpt_reports <- hpt_reports %>%
   filter(county %in% impact_counties) %>%
-  select(
-    -c(code : county)
-  ) %>%
+  separate_wider_delim(Data, ".", names = c("Dataset ID", "Indicator")) |>
+  pivot_wider(names_from = Indicator,
+              values_from = Value) |>
+  filter(EXPECTED_REPORTS > 0) %>%
   mutate(
-    Programme = "HPT"
-  )
+    Programme = "HPT",
+    Period = as.numeric(Period),
+    ACTUAL_REPORTS = as.numeric(ACTUAL_REPORTS),
+    ACTUAL_REPORTS_ON_TIME = as.numeric(ACTUAL_REPORTS_ON_TIME),
+    EXPECTED_REPORTS = as.numeric(EXPECTED_REPORTS)
+  ) %>%
+    select(
+      -c(code : county)
+    ) 
 
 
 glimpse(hpt_reports)
@@ -176,7 +182,7 @@ glimpse(hpt_reports)
 all_reports <- bind_rows(reports_data, hpt_reports)
 
 
-fwrite(reports_data,
+fwrite(all_reports,
        "data/analysis/reporting_impact.csv")
 
 
