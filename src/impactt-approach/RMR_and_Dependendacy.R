@@ -6,6 +6,7 @@ library(lubridate)
 library(RCurl)
 library(data.table)
 library(readxl)
+library(janitor)
 
 # GET DATA 
 # =============================================================================
@@ -15,7 +16,13 @@ library(readxl)
 # dim(rmr_raw)
 
 rmr_raw <- fread("data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report.csv")
-dependency_raw <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_ass.csv")
+
+dependency_raw <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_ass.csv") %>%
+  janitor::clean_names() %>%
+  mutate(
+    completed_data = lubridate::ymd(completed)
+  )
+
 
 xls_choices <- read_excel("data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_V1_2024.xlsx",
                           sheet = "choices")
@@ -45,7 +52,12 @@ rmr_raw <- rmr_raw %>%
 
 glimpse(rmr_raw)
 
-fwrite(rmr_raw, "data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_Clean.csv")
+rmr_clean <- rmr_raw %>%
+  select(258:274, 1 : 257)
+
+colnames(rmr_clean) <- sub(".*/", "", colnames(rmr_clean))
+
+fwrite(rmr_clean, "data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_Clean.csv")
 
 #******************************************************************************
 # DATA VISUALIZATION INDICATORS
@@ -153,4 +165,37 @@ glimpse(FinalITScores_pivot)
 
 fwrite(FinalITScores_pivot, 
           "data/IMPACTT-approach/clean/ProcessIndicators_Clean.csv")
+
+
+
+### Trend deep dive
+#===============================================================================
+
+# Impact team processes
+process_indicators_trend <- rmr_wide %>%
+  mutate(date_of_meeting = `meeting__details/date_of_meeting`) %>%
+  group_by(country, county, team, date_of_meeting) %>%
+  summarise(`Agenda Complete` = mean(agenda_complete, na.rm = TRUE),
+            `RCA Conducted` = mean(RCA_conducted, na.rm = TRUE),
+            `Action Plan Documented` = mean(action_plan_documented, na.rm = TRUE),
+            `Action Items Implemented` = mean(action_items_implemented, na.rm = TRUE),
+            `Composite Score` = mean(CompScore, na.rm = TRUE) / 4
+  )
+glimpse(process_indicators_trend)
+
+
+fwrite(process_indicators_trend, 
+       "data/IMPACTT-approach/clean/ProcessIndicators_Clean_Trend.csv")
+
+
+
+
+
+
+
+
+
+
+
+
 
