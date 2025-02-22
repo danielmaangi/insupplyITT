@@ -188,9 +188,36 @@ fwrite(process_indicators_trend,
        "data/IMPACTT-approach/clean/ProcessIndicators_Clean_Trend.csv")
 
 
+# Impact team common implementation challenges
+challenges_main <- rmr_wide %>%
+  mutate(date_of_meeting = `meeting__details/date_of_meeting`) %>%
+  select(country, county, team, date_of_meeting, `challenges_successes/challenges_encountered/1` : `challenges_successes/other_challenges`) %>%
+  pivot_longer(
+    cols = c(`challenges_successes/challenges_encountered/1` : `challenges_successes/other_challenges`)
+  ) %>%
+  mutate(
+    name = str_replace(name, "challenges_successes/", "")
+  ) %>%
+  mutate(map_challenge = case_when(
+    name == "challenges_encountered/1" ~ "Inadequate preparation for the meeting",
+    name == "challenges_encountered/2" ~ "IT Process gaps",
+    name == "challenges_encountered/3" ~ "Skills gap; connecting to virtual meeting",
+    name == "challenges_encountered/4" ~ "Skills gap; data analysis, presentation/ITT utilization",
+    name == "challenges_encountered/5" ~ "Skills gap; minutes taking",
+    name == "challenges_encountered/6" ~ "Skills gap; review of supply chain indicators",
+    name == "challenges_encountered/7" ~ "Skills gap; root cause analysis",
+    name == "challenges_encountered/8" ~ "Time management/constraints",
+    name == "challenges_encountered/9" ~ "Unavailability of data",
+    name == "challenges_encountered/10" ~ "Unavailability of key members",
+    name == "challenges_encountered/11" ~ "Other challenges",
+    name == "challenges_encountered/12" ~ "Lack of a projector",
+    name == "other_challenges_encountered" ~ "Other challenges",
+    name == "challenges_encountered_comments" ~ "Comments",
+    TRUE ~ NA_character_  
+  )) 
 
-
-
+fwrite(challenges_main, 
+       "data/IMPACTT-approach/clean/challenges_main.csv")
 
 
 
