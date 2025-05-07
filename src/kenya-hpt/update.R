@@ -12,9 +12,11 @@ library(future.apply)
 library(datimutils)
 
 
-#Kenya ~ HfVjCurKxh2
-username<-"Maangi"
-password<-"kiMaNi:1991"
+Kenya ~ HfVjCurKxh2
+#username<-"Maangi"
+#password<-"kiMaNi:1991"
+username<-"mikonya"
+password<-"Kenya2030"
 base.url<-"https://hiskenya.org/"
 period <- 2025
 enddate <- Sys.Date() - months(1)  #Sys.Date(); as.Date("2023-01-01") / 

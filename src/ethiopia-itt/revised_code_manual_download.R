@@ -1,5 +1,3 @@
-# Install and load required libraries
-#install.packages(c("googledrive", "readxl", "dplyr"))
 library(googledrive)
 library(readxl)
 library(data.table)
@@ -20,59 +18,53 @@ products_copy <- clean_product_list %>%
   rename(prog_copy = prog,
          item_copy = product)
 
-# Authenticate with Google Drive
-drive_auth("daniel_maangi@insupplyhealth.com") # Follow the prompts to authenticate
+# Specify the parent folder path on your local computer
+parent_folder_path <- "data/ethiopia-itt/raw/download" # Replace with the actual path
 
-# Get the parent folder containing subfolders for each month
-parent_folder_name <- "https://drive.google.com/drive/folders/1KVm2HCGst-E8XtZJwZ-R70sdzE5dG5rF"
-parent_folder <- drive_get(parent_folder_name)
-
-# List all items in the parent folder
-subfolders <- drive_ls(parent_folder, type = "folder")
-
-# Check the structure of the `subfolders` data frame
-print(subfolders)
+# List all subfolders in the parent folder
+subfolders <- list.dirs(parent_folder_path, full.names = TRUE, recursive = FALSE)
+subfolder_names <- basename(subfolders)
 
 # Ensure the 'data' folder exists in the R project
 data_dir <- "data/ethiopia-itt/raw/results"
-if (!dir.exists(data_dir)) dir.create(data_dir)
+if (!dir.exists(data_dir)) dir.create(data_dir, recursive = TRUE)
 
 # Initialize a list to store all data
 all_data <- list()
 
 # Loop through each subfolder to process Excel files
-for (i in seq_len(nrow(subfolders))) {
-  folder_name <- subfolders$name[i]
-  folder_id <- subfolders$id[i]
+for (i in seq_along(subfolders)) {
+  folder_path <- subfolders[i]
+  folder_name <- subfolder_names[i]
   
-  # List files in the current subfolder
-  files <- drive_ls(as_id(folder_id)) %>%
-    filter(grepl("\\.xlsx$", name) | grepl("\\.xls$", name))
+  # Construct the pattern to find Excel files
+  excel_pattern <- "\\.xlsx$|\\.xls$"
   
-  # Download Excel files locally
-  lapply(seq_len(nrow(files)), function(j) {
-    drive_download(as_id(files$id[j]), 
-                   path = file.path(data_dir, files$name[j]),
-                   overwrite = TRUE)
-  })
+  # List all Excel files in the current subfolder
+  files <- list.files(path = folder_path, pattern = excel_pattern, full.names = TRUE)
+  file_names <- basename(files)
   
-  # Read all sheets from the downloaded files
-  folder_data <- lapply(files$name, function(file_name) {
+  # Download Excel files locally (no download needed when reading locally, just copy)
+  file.copy(from = files, to = file.path(data_dir, file_names), overwrite = TRUE)
+  
+  # Read all sheets from the copied files
+  folder_data <- lapply(file_names, function(file_name) {
     file_path <- file.path(data_dir, file_name)
     sheets <- excel_sheets(file_path)
     
     lapply(sheets, function(sheet) {
-      read_excel(file_path, 
-                 sheet = sheet, 
+      read_excel(file_path,
+                 sheet = sheet,
                  range = "A3:G45",
                  col_types = "text")
     })
   })
-  names(folder_data) <- files$name
+  names(folder_data) <- file_names
   
   # Store data for the current folder
   all_data[[folder_name]] <- folder_data
 }
+
 
 # Optionally combine data from all folders
 combined_data <- bind_rows(
@@ -87,6 +79,23 @@ combined_data <- bind_rows(
   .id = "folder_name"
 )
 
+combined_data <- combined_data %>%
+  transmute(
+    folder_name = folder_name,
+    file_name = file_name,
+    sheet_name = sheet_name,
+    S.N = S.N,
+    `Item list` = `Item list`,
+    Category = Category,
+    Unit = Unit,
+    `Stock on Hand` = case_when(is.na(`Stock on Hand`) ~ `Stock on hand at the end of the month`,
+                                TRUE ~ `Stock on Hand`),
+    `Total consumed quantity in the month` = case_when(is.na(`Total consumed quantity in the month`) ~ `Monthly Consumption`,
+                                                       TRUE ~ `Total consumed quantity in the month`),
+    `No. of Days out of stock in the month` = case_when(is.na(`No. of Days out of stock in the month`) ~ `No. of stock out days`,
+                                                        TRUE ~ `No. of Days out of stock in the month`)
+  )
+
 # Clean
 # Renaming columns based on their position
 colnames(combined_data)[1] <- "month"
@@ -100,6 +109,8 @@ colnames(combined_data)[9] <- "consumed"
 colnames(combined_data)[10] <- "days_stocked_out"
 
 combined_data <- combined_data[1:10]
+
+
 
 clean_data <- combined_data %>%
   mutate(across(c(stock_on_hand, consumed, days_stocked_out), as.numeric)) %>%
@@ -167,9 +178,9 @@ clean_data <- combined_data %>%
   left_join(clean_product_list, by = c("item" = "product")) %>%
   mutate(
     serial_no = case_when(!is.na(serial_no) & is.na(sn) ~ serial_no,
-                         is.na(serial_no) & !is.na(sn) ~ sn,
-                         TRUE ~ serial_no
-                         )
+                          is.na(serial_no) & !is.na(sn) ~ sn,
+                          TRUE ~ serial_no
+    )
   )
 
 ## Clean additional serials
@@ -197,14 +208,14 @@ clean_data <- clean_data %>%
   ) %>%
   select(-sn) %>%
   filter(item != "190") %>% # Product does not exist
-arrange(site_code, serial_no, date) %>%
+  arrange(site_code, serial_no, date) %>%
   as.data.table() %>%
   left_join(products_copy, by = c("serial_no" = "sn"))
 
 
 # clean_data[, consumption := ifelse(is.na(consumption), 0, consumption)]
 clean_data[, consumed_in_6m := frollsum(consumed, n = 6, na.rm = TRUE), 
-             by = .(site_code, serial_no)]
+           by = .(site_code, serial_no)]
 
 # calculate amc @ site
 library(zoo)
@@ -234,15 +245,15 @@ clean_data <- clean_data |>
     satp = case_when(stock_status == "Adequate" ~ 1,
                      stock_status %in% c("Stock out", "Understock", "Overstock") ~ 0,
                      TRUE ~ NA_integer_
-                     ),
+    ),
     stockout = case_when(stock_status == "Stock out" ~ 1,
-                     stock_status %in% c("Adequate", "Understock", "Overstock") ~ 0,
-                     TRUE ~ NA_integer_
+                         stock_status %in% c("Adequate", "Understock", "Overstock") ~ 0,
+                         TRUE ~ NA_integer_
     )
   ) %>%
   arrange(serial_no, site_code, desc(date)) %>%
   distinct(site_code, serial_no, date, .keep_all = TRUE)
-  
+
 
 # Missing data
 missing_data <- clean_data %>% 
@@ -261,6 +272,8 @@ test_missing(clean_data, output_csv_path)
 reports <- clean_data %>%
   distinct(month, date, site_code)
 fwrite(reports, "data/ethiopia-itt/clean/reports.csv")
+
+
 
 
 

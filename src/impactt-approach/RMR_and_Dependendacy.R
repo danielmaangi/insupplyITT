@@ -7,6 +7,7 @@ library(RCurl)
 library(data.table)
 library(readxl)
 library(janitor)
+library(air)
 
 # GET DATA 
 # =============================================================================
@@ -17,11 +18,104 @@ library(janitor)
 
 rmr_raw <- fread("data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report.csv")
 
-dependency_raw <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_ass.csv") %>%
+# dependency_raw <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_ass.csv")
+
+
+### Dependency data
+#==========================================================================================
+dependency_one <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_ass.csv") %>%
   janitor::clean_names() %>%
+  select(-(date_of_completion)) %>%
   mutate(
-    completed_data = lubridate::ymd(completed)
+    created = as.Date(created),
+    completed = as.Date(completed),
+    changed = as.Date(changed),
+  ) %>%
+  mutate(
+    year_created = year(created)
   )
+
+tabyl(dependency_one$year_created)
+dim(dependency_one)
+
+dependency_two <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_assessment_April 2025.csv") %>%
+  janitor::clean_names() %>%
+  select(-(date_of_completion)) %>%
+  mutate(
+    created = as.Date(lubridate::mdy_hm(created)),
+    completed = as.Date(lubridate::mdy_hm(completed)),
+    changed = as.Date(lubridate::mdy_hm(changed))
+  ) %>%
+  mutate(
+    year_created = year(created)
+  )
+
+tabyl(dependency_two$year_created)
+dim(dependency_two)
+
+dependency_all <- bind_rows(dependency_one, dependency_two)
+
+dependency_all_min <- dependency_all %>%
+  select(
+    submission_id,
+    created, completed, changed, year_created,
+    submitted_by_title, submitted_to_entity_title,
+    name_of_impact_team_sub_county_district_id, 
+    name_of_impact_team_sub_county_district_title,
+    name_s_of_person_s_completing_form,
+    period_of_review_title, year_of_review_title,
+    response : comments_if_any
+  ) %>%
+  # Convert to character
+  mutate(section_score = as.character(section_score),
+         section_score_2 = as.character(section_score_2),
+         section_score_3 = as.character(section_score_3),
+         overall_score = as.character(overall_score)
+  ) 
+
+dependency_all_min_unpivot <- dependency_all_min %>%
+  pivot_longer(cols = c(response : comments_if_any),
+               names_to = "Attribute",
+               values_to = "Value")%>%
+  # Dependency Score
+  mutate(
+    dependency_score = case_when(
+      Value == "High dependency" ~ 3,
+      Value == "Medium dependency" ~ 2,
+      Value == "Low dependency" ~ 1,
+      TRUE ~ NA_integer_
+    )
+  )
+
+fwrite(dependency_all_min_unpivot, 
+       "data/IMPACTT-approach/clean/dependency/Dependency_long.csv")
+
+
+dependency_reference <- dependency_all_min_unpivot %>%
+    distinct(Attribute) %>%
+    mutate(Index = row_number()) %>%
+    mutate(
+    Score = case_when(
+      Attribute == "dependency" ~ "Technical",
+      Attribute == "dependency_2" ~ "Coordination",
+      Attribute == "dependency_3" ~ "Financial",
+      Attribute == "overall_dependency" ~ "Overall",
+      TRUE ~ Attribute
+    ),
+    Class = case_when(
+      grepl("response", Score) ~ "Response",
+      grepl("comments", Score) ~ "Comments",
+      grepl("score", Score) ~ "Section Score",
+      TRUE ~ "Dependency"
+    )
+  )
+
+
+dependency_stacked <- dependency_all_min_unpivot %>%
+  group_by(t)
+
+fwrite(dependency_reference, 
+       "data/IMPACTT-approach/clean/Dependency/dependency_reference.csv")
 
 
 xls_choices <- read_excel("data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_V1_2024.xlsx",
