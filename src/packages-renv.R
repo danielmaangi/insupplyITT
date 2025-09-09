@@ -1,0 +1,15 @@
+renv::init()
+renv::snapshot()
+renv::install(c(
+  "httr",
+  "httr2", 
+  "rjson",
+  "tidyverse",
+  "data.table",
+  "readxl",
+  "jsonlite",
+  "future.apply",
+  "danielmaangi/datimutils@master"
+))
+renv::snapshot()
+renv::clean()

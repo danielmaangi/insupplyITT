@@ -8,7 +8,7 @@ library(data.table)
 library(readxl)
 library(jsonlite)
 library(future.apply)
-# devtools::install_github(repo = "https://github.com/pepfar-datim/datimutils.git", ref = "master")
+# devtools::install_github(repo = "https://github.com/danielmaangi/datimutils.git", ref = "master")
 library(datimutils)
 
 
@@ -20,7 +20,7 @@ password<-"Kenya2030"
 base.url<-"https://hiskenya.org/"
 period <- 2025
 enddate <- Sys.Date() - months(1)  #Sys.Date(); as.Date("2023-01-01") / 
-startdate <- enddate - months(6)  
+startdate <- enddate - months(3)  
 country <- "Kenya" # Type country
 action <- "download"
 
@@ -46,5 +46,5 @@ source("src/kenya-hpt/orgunits.R")
 source("src/kenya-hpt/utils.R")
 source("src/kenya-hpt/Merge.R")
 source("src/kenya-hpt/lastUpdate.R")
-source("src/kenya-hpt/deploy.R")
+#source("src/kenya-hpt/deploy.R")
 
