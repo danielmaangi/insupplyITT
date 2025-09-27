@@ -38,7 +38,7 @@ dependency_one <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_
 tabyl(dependency_one$year_created)
 dim(dependency_one)
 
-dependency_two <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_assessment_April 2025.csv") %>%
+dependency_two <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_assessment_Sep 2025.csv") %>%
   janitor::clean_names() %>%
   select(-(date_of_completion)) %>%
   mutate(
@@ -53,7 +53,9 @@ dependency_two <- fread("data/IMPACTT-approach/raw/impact_team_dependency_level_
 tabyl(dependency_two$year_created)
 dim(dependency_two)
 
-dependency_all <- bind_rows(dependency_one, dependency_two)
+#dependency_all <- bind_rows(dependency_one, dependency_two)
+
+dependency_all <- dependency_two
 
 dependency_all_min <- dependency_all %>%
   select(
@@ -111,9 +113,6 @@ dependency_reference <- dependency_all_min_unpivot %>%
   )
 
 
-dependency_stacked <- dependency_all_min_unpivot %>%
-  group_by(t)
-
 fwrite(dependency_reference, 
        "data/IMPACTT-approach/clean/Dependency/dependency_reference.csv")
 
@@ -146,12 +145,12 @@ rmr_raw <- rmr_raw %>%
 
 glimpse(rmr_raw)
 
-rmr_clean <- rmr_raw %>%
-  select(258:274, 1 : 257)
+#rmr_clean <- rmr_raw %>%
+#  select(258:274, 1 : 257)
 
-colnames(rmr_clean) <- sub(".*/", "", colnames(rmr_clean))
+#colnames(rmr_clean) <- sub(".*/", "", colnames(rmr_clean))
 
-fwrite(rmr_clean, "data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_Clean.csv")
+fwrite(rmr_raw, "data/IMPACTT-approach/raw/IMPACTT_Approach_Rapid_Meeting_Report_Clean.csv")
 
 #******************************************************************************
 # DATA VISUALIZATION INDICATORS
